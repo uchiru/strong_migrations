@@ -14,7 +14,7 @@ module StrongMigrations
     end
 
     def method_missing(method, *args, &block)
-      unless @safe || ENV["SAFETY_ASSURED"] || is_a?(ActiveRecord::Schema) || @direction == :down || version_safe?
+      unless @safe || ENV["SAFETY_ASSURED"] || is_a?(ActiveRecord::Schema) || @direction == :down || version_safe? || name_safe?
         ar5 = ActiveRecord::VERSION::MAJOR >= 5
 
         case method
@@ -147,6 +147,10 @@ module StrongMigrations
 
     def version_safe?
       version && version <= StrongMigrations.start_after
+    end
+
+    def name_safe?
+      !version && name && StrongMigrations.ignored.include?(name)
     end
 
     def raise_error(message_key, header: nil, **vars)
