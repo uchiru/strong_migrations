@@ -8,11 +8,12 @@ require "strong_migrations/version"
 
 module StrongMigrations
   class << self
-    attr_accessor :auto_analyze, :start_after, :checks, :error_messages
+    attr_accessor :auto_analyze, :start_after, :checks, :error_messages, :ignored
   end
   self.auto_analyze = false
   self.start_after = 0
   self.checks = []
+  self.ignored = []
   self.error_messages = {
     add_column_default:
 "Adding a column with a non-null default causes the entire table to be rewritten.
