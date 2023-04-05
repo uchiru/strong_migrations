@@ -150,7 +150,7 @@ module StrongMigrations
     end
 
     def name_safe?
-      !version && name && StrongMigrations.ignored.include?(name)
+      version.nil? && name && StrongMigrations.ignored.include?(name)
     end
 
     def raise_error(message_key, header: nil, **vars)
