@@ -40,6 +40,15 @@ class Backfill%{migration_name} < ActiveRecord::Migration%{migration_suffix}
   end
 end",
 
+    add_column_default_null:
+      "Adding a column with a null default causes the entire table to be rewritten.
+Instead, add the column without a default value.
+class %{migration_name} < ActiveRecord::Migration%{migration_suffix}
+  def change
+    %{command}
+  end
+end",
+
     add_column_json:
 "There's no equality operator for the json column type, which
 causes issues for SELECT DISTINCT queries. Use jsonb instead.",

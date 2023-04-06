@@ -46,6 +46,12 @@ class AddColumnDefault < TestMigration
   end
 end
 
+class AddColumnDefaultNull < TestMigration
+  def change
+    add_column :users, :nice, :boolean, default: nil
+  end
+end
+
 class AddColumnDefaultSafe < TestMigration
   def change
     add_column :users, :nice, :boolean
@@ -249,6 +255,10 @@ class StrongMigrationsTest < Minitest::Test
 
   def test_add_column_default
     assert_unsafe AddColumnDefault
+  end
+
+  def test_add_column_default_null
+    assert_unsafe AddColumnDefaultNull
   end
 
   def test_add_column_default_safe

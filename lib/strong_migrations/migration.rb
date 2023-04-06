@@ -64,7 +64,10 @@ module StrongMigrations
           options ||= {}
           default = options[:default]
 
-          if !default.nil? && !(postgresql? && postgresql_version >= 110000)
+          if options.key?(:default) && default.nil? && postgresql?
+            raise_error :add_column_default_null,
+              command: command_str("add_column", [table, column, type, options.except(:default)])
+          elsif default && postgresql?
             raise_error :add_column_default,
               add_command: command_str("add_column", [table, column, type, options.except(:default)]),
               change_command: command_str("change_column_default", [table, column, default]),
