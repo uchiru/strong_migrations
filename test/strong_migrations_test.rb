@@ -175,6 +175,16 @@ end
 
 class SafeAddReference < TestMigration
   def change
+    # В апстриме на портируемом коммите (https://github.com/ankane/strong_migrations/blob/5b0385af895b23c09aa1c150dfc7be3ef4b52822/test/migrations/add_reference.rb#L15)
+    # этого класса уже нет, но в нашей форктутой старой версии из-за одинаковости колонки
+    # с добавленным `AddReferenceNoIndex` `test_revert` получается flaky,
+    # поэтому тут переименовываем колонку (этой подстроки больше нигде нет)
+    add_reference :users, :safe_country, index: false
+  end
+end
+
+class AddReferenceNoIndex < TestMigration
+  def change
     add_reference :users, :country, index: false
   end
 end
@@ -216,6 +226,18 @@ class VersionUnsafe < TestMigration
 
   def version
     20170101000001
+  end
+end
+
+class RevertAddReference < TestMigration
+  def change
+    revert AddReferenceNoIndex
+  end
+end
+
+class RevertAddReferenceSafetyAssured < TestMigration
+  def change
+    safety_assured { revert AddReferenceNoIndex }
   end
 end
 
@@ -376,6 +398,12 @@ class StrongMigrationsTest < Minitest::Test
   def test_down
     assert_safe SafeUp
     assert_safe SafeUp, direction: :down
+  end
+
+  def test_revert
+    migrate AddReferenceNoIndex
+    assert_unsafe RevertAddReference
+    migrate RevertAddReferenceSafetyAssured
   end
 
   def test_custom

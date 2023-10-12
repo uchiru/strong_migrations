@@ -1,11 +1,21 @@
 module StrongMigrations
   module Migration
+    class << self
+      attr_accessor :safe
+    end
+
+    def initialize(*)
+      super
+
+      @@safe ||= false
+    end
+
     def safety_assured
-      previous_value = @safe
-      @safe = true
+      previous_value = @@safe
+      @@safe = true
       yield
     ensure
-      @safe = previous_value
+      @@safe = previous_value
     end
 
     def migrate(direction)
@@ -14,7 +24,7 @@ module StrongMigrations
     end
 
     def method_missing(method, *args, &block)
-      unless @safe || ENV["SAFETY_ASSURED"] || is_a?(ActiveRecord::Schema) || @direction == :down || version_safe? || name_safe?
+      unless @@safe || ENV["SAFETY_ASSURED"] || is_a?(ActiveRecord::Schema) || @direction == :down || version_safe? || name_safe?
         ar5 = ActiveRecord::VERSION::MAJOR >= 5
 
         case method
