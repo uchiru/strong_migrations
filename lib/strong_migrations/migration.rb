@@ -1,9 +1,5 @@
 module StrongMigrations
   module Migration
-    class << self
-      attr_accessor :safe
-    end
-
     def initialize(*)
       super
 
